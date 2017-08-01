@@ -1,0 +1,80 @@
+//Plugins
+plugins {
+    id "net.ltgt.apt" version "0.10"
+    id "com.github.johnrengelman.shadow" version "2.0.1"
+}
+
+apply plugin : 'java'
+apply plugin : 'maven'
+apply plugin : 'idea'
+//End Plugins
+
+//Program Specific Variables
+def programVersion = "0.0.0"
+def programGroup = "com.gmail.socraticphoenix"
+//End Variables
+
+//Gradle Variables
+group = "$programGroup"
+version = "$programVersion"
+sourceCompatibility = 1.8
+//End Gradle Variables
+
+configurations {
+    library
+    compile.extendsFrom library
+    runtime.extendsFrom library
+}
+
+//Repositories and Dependencies
+repositories {
+    mavenCentral()
+
+    maven {
+        name "jitpack.io"
+        url "https://jitpack.io"
+    }
+}
+
+dependencies {
+    library "com.github.PlutoPowered:PIO:master-SNAPSHOT"
+    library "com.github.PlutoPowered:Parse:master-SNAPSHOT"
+    library "com.github.PlutoPowered:Collect:master-SNAPSHOT"
+    library "com.github.PlutoPowered:InverseY:master-SNAPSHOT"
+    library "com.github.PlutoPowered:Mirror:master-SNAPSHOT"
+    library "com.github.PlutoPowered:JLSC:master-SNAPSHOT"
+    library "com.intellij:forms_rt:7.0.3"
+}
+//End Repositories and Dependencies
+
+//Tasks
+task sourceJar(type: Jar) {
+    classifier = "source"
+    from sourceSets.main.allJava
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc){
+    classifier = "javadoc"
+    from javadoc.destinationDir
+}
+
+jar {
+    manifest {
+        attributes("Main-Class": "com.gmail.socraticphoenix.randores.editor.Main")
+    }
+}
+
+javadoc {
+    destinationDir = file("docs")
+}
+
+shadowJar {
+    classifier = "shadow"
+}
+//End Tasks
+
+//Configurations
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+//End configurations

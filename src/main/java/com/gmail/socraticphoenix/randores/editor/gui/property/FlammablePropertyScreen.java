@@ -71,7 +71,7 @@ public class FlammablePropertyScreen implements ChildScreen {
             }
         });
         frame.add(this.panel1);
-        frame.setSize(400, 150);
+        frame.setSize(400, 125);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
 

@@ -22,19 +22,30 @@
 package com.gmail.socraticphoenix.randores.mod.component;
 
 public enum CraftableType {
-    AXE,
-    HOE,
-    PICKAXE,
-    SHOVEL,
-    SWORD,
-    STICK,
-    BOOTS,
-    CHESTPLATE,
-    HELMET,
-    LEGGINGS,
-    BATTLEAXE,
-    SLEDGEHAMMER,
-    BOW,
-    BRICKS,
-    TORCH;
+    AXE(1),
+    HOE(1),
+    PICKAXE(1),
+    SHOVEL(1),
+    HELMET(1),
+    CHESTPLATE(1),
+    LEGGINGS(1),
+    BOOTS(1),
+    SWORD(1),
+    BATTLEAXE(1),
+    SLEDGEHAMMER(1),
+    BOW(1),
+    STICK(2),
+    BRICKS(4),
+    TORCH(4);
+
+    int quantity;
+
+    CraftableType(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public int getQuantity() {
+        return this.quantity;
+    }
+
 }

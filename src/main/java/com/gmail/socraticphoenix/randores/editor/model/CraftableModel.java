@@ -60,7 +60,7 @@ public class CraftableModel implements ComponentModel {
 
     @Override
     public String write() {
-        return "craftable[type=" + this.type + ", quantity=" + this.quantity + "]";
+        return "craftable[type=" + this.type + "]";
     }
 
     public String toString() {

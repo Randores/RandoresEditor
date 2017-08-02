@@ -21,7 +21,7 @@
  */
 package com.gmail.socraticphoenix.randores.editor;
 
-import com.gmail.socraticphoenix.randores.config.JLSCHandler;
+import com.gmail.socraticphoenix.randores.editor.config.JLSCHandler;
 import com.gmail.socraticphoenix.randores.editor.gui.ProjectScreen;
 import com.gmail.socraticphoenix.randores.editor.gui.ability.AbilityScreenRegistry;
 import com.gmail.socraticphoenix.randores.editor.gui.property.PropertyScreenRegistry;

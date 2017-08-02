@@ -58,6 +58,13 @@ public class SelectCraftableScreen implements ChildScreen {
             this.type.addItem(type.name());
         }
 
+        for (CraftableType type : CraftableType.values()) {
+            if (this.screen.getModel().get().getCraftables().stream().noneMatch(c -> c.getType() == type)) {
+                this.type.setSelectedItem(type.name());
+                break;
+            }
+        }
+
         this.cancelButton.addActionListener(e -> {
             this.screen.getAssociatedWindows().remove(frame);
             frame.dispose();
@@ -71,13 +78,9 @@ public class SelectCraftableScreen implements ChildScreen {
                 this.screen.getAssociatedWindows().remove(frame);
                 frame.dispose();
 
-                CraftableModel model = new CraftableModel(type, 1);
+                CraftableModel model = new CraftableModel(type, type.getQuantity());
                 this.screen.getModel().get().getCraftables().add(model);
                 ((DefaultListModel) this.screen.getCraftables().getModel()).addElement(model);
-
-                EditCraftableScreen edit = new EditCraftableScreen(model, this.screen);
-                JFrame cre = edit.initAndShow();
-                this.screen.getAssociatedWindows().add(cre);
             }
         });
 
@@ -86,6 +89,25 @@ public class SelectCraftableScreen implements ChildScreen {
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
         return frame;
+    }
+
+    /**
+     * @noinspection ALL
+     */
+    private Font $$$getFont$$$(String fontName, int style, int size, Font currentFont) {
+        if (currentFont == null) return null;
+        String resultName;
+        if (fontName == null) {
+            resultName = currentFont.getName();
+        } else {
+            Font testFont = new Font(fontName, Font.PLAIN, 10);
+            if (testFont.canDisplay('a') && testFont.canDisplay('1')) {
+                resultName = fontName;
+            } else {
+                resultName = currentFont.getName();
+            }
+        }
+        return new Font(resultName, style >= 0 ? style : currentFont.getStyle(), size >= 0 ? size : currentFont.getSize());
     }
 
     {
@@ -119,25 +141,6 @@ public class SelectCraftableScreen implements ChildScreen {
         cancelButton = new JButton();
         cancelButton.setText("Cancel");
         panel2.add(cancelButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-    }
-
-    /**
-     * @noinspection ALL
-     */
-    private Font $$$getFont$$$(String fontName, int style, int size, Font currentFont) {
-        if (currentFont == null) return null;
-        String resultName;
-        if (fontName == null) {
-            resultName = currentFont.getName();
-        } else {
-            Font testFont = new Font(fontName, Font.PLAIN, 10);
-            if (testFont.canDisplay('a') && testFont.canDisplay('1')) {
-                resultName = fontName;
-            } else {
-                resultName = currentFont.getName();
-            }
-        }
-        return new Font(resultName, style >= 0 ? style : currentFont.getStyle(), size >= 0 ? size : currentFont.getSize());
     }
 
     /**

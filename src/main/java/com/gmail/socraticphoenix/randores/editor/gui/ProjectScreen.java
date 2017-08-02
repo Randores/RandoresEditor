@@ -77,6 +77,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -125,7 +126,6 @@ public class ProjectScreen {
     private JButton editProperty;
     private JButton addCraftable;
     private JButton removeCraftable;
-    private JButton editCraftable;
     private JButton addProjectile;
     private JButton removeProjectile;
     private JButton editProjectile;
@@ -397,15 +397,6 @@ public class ProjectScreen {
             this.associatedWindows.add(frame);
         });
 
-        this.editCraftable.addActionListener(e -> {
-            CraftableModel model = (CraftableModel) this.craftables.getSelectedValue();
-            if (model != null) {
-                EditCraftableScreen editScreen = new EditCraftableScreen(model, this);
-                JFrame frame = editScreen.initAndShow();
-                this.associatedWindows.add(frame);
-            }
-        });
-
         this.removeCraftable.addActionListener(e -> {
             CraftableModel model = (CraftableModel) this.craftables.getSelectedValue();
             if (model != null) {
@@ -480,20 +471,29 @@ public class ProjectScreen {
             int op = this.fileChooser.showSaveDialog(null);
             if (op == JFileChooser.APPROVE_OPTION) {
                 File target = this.fileChooser.getSelectedFile();
-                JLSCArray definitions = new JLSCArray();
-                DefaultListModel listModel = (DefaultListModel) this.definitions.getModel();
-                for (int i = 0; i < listModel.getSize(); i++) {
-                    definitions.add(listModel.getElementAt(i));
-                }
-                new Thread(() -> {
-                    try {
-                        JLSCConfiguration configuration = new JLSCConfiguration(new JLSCCompound().toConcurrent(), target, target.getName().endsWith(".cjlsc") ? JLSCFormat.COMPRESSED_BYTES : JLSCFormat.TEXT, true);
-                        configuration.put("definitions", definitions);
-                        configuration.save();
-                    } catch (Throwable err) {
-                        JOptionPane.showMessageDialog(null, err.getMessage(), "Error Saving File", JOptionPane.ERROR_MESSAGE);
+                AtomicBoolean atomicBoolean = new AtomicBoolean(true);
+                if (target.exists()) {
+                    int op1 = JOptionPane.showConfirmDialog(null, "Overwrite?", "Confirm Save", JOptionPane.YES_NO_OPTION);
+                    if (op1 != JOptionPane.YES_OPTION) {
+                        atomicBoolean.set(false);
                     }
-                }).start();
+                }
+                if (atomicBoolean.get()) {
+                    JLSCArray definitions = new JLSCArray();
+                    DefaultListModel listModel = (DefaultListModel) this.definitions.getModel();
+                    for (int i = 0; i < listModel.getSize(); i++) {
+                        definitions.add(listModel.getElementAt(i));
+                    }
+                    new Thread(() -> {
+                        try {
+                            JLSCConfiguration configuration = new JLSCConfiguration(new JLSCCompound().toConcurrent(), target, target.getName().endsWith(".cjlsc") ? JLSCFormat.COMPRESSED_BYTES : JLSCFormat.TEXT, true);
+                            configuration.put("definitions", definitions);
+                            configuration.save();
+                        } catch (Throwable err) {
+                            JOptionPane.showMessageDialog(null, err.getMessage(), "Error Saving File", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }).start();
+                }
             }
         });
     }
@@ -934,7 +934,7 @@ public class ProjectScreen {
         label26.setText("Craftables:");
         panel10.add(label26, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel11 = new JPanel();
-        panel11.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
+        panel11.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel10.add(panel11, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         addCraftable = new JButton();
         addCraftable.setText("Add");
@@ -944,10 +944,6 @@ public class ProjectScreen {
         removeCraftable.setText("Remove");
         removeCraftable.setToolTipText("Remove selected component");
         panel11.add(removeCraftable, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        editCraftable = new JButton();
-        editCraftable.setText("Edit");
-        editCraftable.setToolTipText("Edit selected component");
-        panel11.add(editCraftable, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel12 = new JPanel();
         panel12.setLayout(new GridLayoutManager(4, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel7.add(panel12, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

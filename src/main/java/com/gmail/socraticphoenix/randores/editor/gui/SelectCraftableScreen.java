@@ -22,7 +22,7 @@
 package com.gmail.socraticphoenix.randores.editor.gui;
 
 import com.gmail.socraticphoenix.randores.editor.model.CraftableModel;
-import com.gmail.socraticphoenix.randores.component.CraftableType;
+import com.gmail.socraticphoenix.randores.editor.model.CraftableTypeModel;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import javax.swing.DefaultListModel;
@@ -33,16 +33,21 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class SelectCraftableScreen implements ChildScreen {
-    private JComboBox type;
+    private JComboBox typeCombo;
     private JButton createButton;
     private JButton cancelButton;
     private JPanel panel1;
+    private JTextField type;
 
     private ProjectScreen screen;
 
@@ -54,16 +59,19 @@ public class SelectCraftableScreen implements ChildScreen {
     public JFrame initAndShow() {
         JFrame frame = new JFrame("Select Craftable Component");
 
-        for (CraftableType type : CraftableType.values()) {
-            this.type.addItem(type.name());
+        for (String type : CraftableTypeModel.KNOWN_CRAFTABLE_TYPES) {
+            this.typeCombo.addItem(type);
         }
 
-        for (CraftableType type : CraftableType.values()) {
-            if (this.screen.getModel().get().getCraftables().stream().noneMatch(c -> c.getType() == type)) {
-                this.type.setSelectedItem(type.name());
+        for (String type : CraftableTypeModel.KNOWN_CRAFTABLE_TYPES) {
+            if (this.screen.getModel().get().getCraftables().stream().noneMatch(c -> c.getType().getValue().equals(type))) {
+                this.typeCombo.setSelectedItem(type);
                 break;
             }
         }
+
+        this.type.setText(String.valueOf(this.typeCombo.getSelectedItem()));
+        this.typeCombo.addActionListener(e -> this.type.setText(String.valueOf(this.typeCombo.getSelectedItem())));
 
         this.cancelButton.addActionListener(e -> {
             this.screen.getAssociatedWindows().remove(frame);
@@ -71,21 +79,32 @@ public class SelectCraftableScreen implements ChildScreen {
         });
 
         this.createButton.addActionListener(e -> {
-            CraftableType type = CraftableType.valueOf(String.valueOf(this.type.getSelectedItem()));
-            if (this.screen.getModel().get().getCraftables().stream().anyMatch(c -> c.getType() == type)) {
-                JOptionPane.showMessageDialog(null, "A component with the type " + type + " already exists!", "Wanring", JOptionPane.ERROR_MESSAGE);
+            CraftableTypeModel type = new CraftableTypeModel(this.type.getText());
+            if (this.screen.getModel().get().getCraftables().stream().anyMatch(c -> c.getType().getValue().equals(type.getValue()))) {
+                JOptionPane.showMessageDialog(null, "A component with the type " + type.getValue() + " already exists!", "Warning", JOptionPane.ERROR_MESSAGE);
             } else {
                 this.screen.getAssociatedWindows().remove(frame);
                 frame.dispose();
 
-                CraftableModel model = new CraftableModel(type, type.getQuantity());
+                CraftableModel model = new CraftableModel(type, CraftableTypeModel.KNOWN_SIZES.getOrDefault(type.getValue(), 1));
                 this.screen.getModel().get().getCraftables().add(model);
                 ((DefaultListModel) this.screen.getCraftables().getModel()).addElement(model);
+
+                EditCraftableScreen edit = new EditCraftableScreen(model, screen);
+                JFrame cre = edit.initAndShow();
+                screen.getAssociatedWindows().add(cre);
+            }
+        });
+
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                screen.getAssociatedWindows().remove(frame);
             }
         });
 
         frame.add(this.panel1);
-        frame.setSize(400, 100);
+        frame.setSize(400, 125);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
         return frame;
@@ -126,21 +145,26 @@ public class SelectCraftableScreen implements ChildScreen {
      */
     private void $$$setupUI$$$() {
         panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.setLayout(new GridLayoutManager(3, 2, new Insets(0, 0, 0, 0), -1, -1));
         final JLabel label1 = new JLabel();
-        label1.setText("Type:");
+        label1.setText("Known Types:");
         panel1.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        type = new JComboBox();
-        panel1.add(type, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        typeCombo = new JComboBox();
+        panel1.add(typeCombo, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
-        panel1.add(panel2, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel1.add(panel2, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         createButton = new JButton();
         createButton.setText("Create");
         panel2.add(createButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         cancelButton = new JButton();
         cancelButton.setText("Cancel");
         panel2.add(cancelButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        type = new JTextField();
+        panel1.add(type, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        final JLabel label2 = new JLabel();
+        label2.setText("Type:");
+        panel1.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

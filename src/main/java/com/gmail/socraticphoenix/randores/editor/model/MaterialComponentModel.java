@@ -25,12 +25,11 @@ import com.gmail.socraticphoenix.jlsc.serialization.annotation.Name;
 import com.gmail.socraticphoenix.jlsc.serialization.annotation.Serializable;
 import com.gmail.socraticphoenix.jlsc.serialization.annotation.SerializationConstructor;
 import com.gmail.socraticphoenix.jlsc.serialization.annotation.Serialize;
-import com.gmail.socraticphoenix.randores.component.MaterialType;
 
 @Serializable
 public class MaterialComponentModel implements ComponentModel {
     @Serialize(value = "type", reflect = false)
-    private MaterialType type;
+    private MaterialTypeModel type;
     @Serialize(value = "armorReduction", reflect = false, comments = "Armor reduction values for helmet, chestplate, leggings, and boots, in that order")
     private int[] armorReduction;
     @Serialize(value = "harvestLevel", reflect = false, comments = "The harvest level tools made from this material work on")
@@ -47,7 +46,7 @@ public class MaterialComponentModel implements ComponentModel {
     private int enchantability;
 
     @SerializationConstructor
-    public MaterialComponentModel(@Name("type") MaterialType type, @Name("armorReduction") int[] armorReduction, @Name("harvestLevel") int harvestLevel, @Name("durability") int maxUses, @Name("efficiency") float efficiency, @Name("damage") float damage, @Name("toughness") float toughness, @Name("enchantability") int enchantability) {
+    public MaterialComponentModel(@Name("type") MaterialTypeModel type, @Name("armorReduction") int[] armorReduction, @Name("harvestLevel") int harvestLevel, @Name("durability") int maxUses, @Name("efficiency") float efficiency, @Name("damage") float damage, @Name("toughness") float toughness, @Name("enchantability") int enchantability) {
         this.type = type;
         this.armorReduction = armorReduction;
         this.harvestLevel = harvestLevel;
@@ -58,11 +57,11 @@ public class MaterialComponentModel implements ComponentModel {
         this.enchantability = enchantability;
     }
 
-    public MaterialType getType() {
+    public MaterialTypeModel getType() {
         return this.type;
     }
 
-    public MaterialComponentModel setType(MaterialType type) {
+    public MaterialComponentModel setType(MaterialTypeModel type) {
         this.type = type;
         return this;
     }
@@ -132,7 +131,7 @@ public class MaterialComponentModel implements ComponentModel {
 
     @Override
     public String write() {
-        return "material[type=" + this.type.name() + "]";
+        return "material[type=" + this.type.getValue() + "]";
     }
 
     public String toString() {

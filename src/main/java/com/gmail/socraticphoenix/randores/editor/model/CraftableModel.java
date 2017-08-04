@@ -25,26 +25,25 @@ import com.gmail.socraticphoenix.jlsc.serialization.annotation.Name;
 import com.gmail.socraticphoenix.jlsc.serialization.annotation.Serializable;
 import com.gmail.socraticphoenix.jlsc.serialization.annotation.SerializationConstructor;
 import com.gmail.socraticphoenix.jlsc.serialization.annotation.Serialize;
-import com.gmail.socraticphoenix.randores.component.CraftableType;
 
 @Serializable
 public class CraftableModel implements ComponentModel {
     @Serialize(value = "type", reflect = false)
-    private CraftableType type;
+    private CraftableTypeModel type;
     @Serialize(value = "quantity", reflect = false)
     private int quantity;
 
     @SerializationConstructor
-    public CraftableModel(@Name("type") CraftableType type, @Name("quantity") int quantity) {
+    public CraftableModel(@Name("type") CraftableTypeModel type, @Name("quantity") int quantity) {
         this.type = type;
         this.quantity = quantity;
     }
 
-    public CraftableType getType() {
+    public CraftableTypeModel getType() {
         return this.type;
     }
 
-    public CraftableModel setType(CraftableType type) {
+    public CraftableModel setType(CraftableTypeModel type) {
         this.type = type;
         return this;
     }
@@ -60,7 +59,7 @@ public class CraftableModel implements ComponentModel {
 
     @Override
     public String write() {
-        return "craftable[type=" + this.type + "]";
+        return "craftable[type=" + this.type.getValue() + ", quantity=" + this.quantity + "]";
     }
 
     public String toString() {

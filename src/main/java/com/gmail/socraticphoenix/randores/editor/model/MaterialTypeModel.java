@@ -19,33 +19,44 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.randores.component;
+package com.gmail.socraticphoenix.randores.editor.model;
 
-public enum CraftableType {
-    AXE(1),
-    HOE(1),
-    PICKAXE(1),
-    SHOVEL(1),
-    HELMET(1),
-    CHESTPLATE(1),
-    LEGGINGS(1),
-    BOOTS(1),
-    SWORD(1),
-    BATTLEAXE(1),
-    SLEDGEHAMMER(1),
-    BOW(1),
-    STICK(2),
-    BRICKS(4),
-    TORCH(4);
+import com.gmail.socraticphoenix.jlsc.value.annotation.ConversionConstructor;
+import com.gmail.socraticphoenix.jlsc.value.annotation.Convert;
+import com.gmail.socraticphoenix.jlsc.value.annotation.Convertible;
+import com.gmail.socraticphoenix.jlsc.value.annotation.Index;
 
-    int quantity;
+import java.util.ArrayList;
+import java.util.List;
 
-    CraftableType(int quantity) {
-        this.quantity = quantity;
+@Convertible
+public class MaterialTypeModel {
+    public static final List<String> KNOWN_MATERIAL_TYPES = new ArrayList<>();
+
+    static {
+        List<String> list = KNOWN_MATERIAL_TYPES;
+        list.add("randores.items.ingot");
+        list.add("randores.items.gem");
+        list.add("randores.items.emerald");
+        list.add("randores.items.circle_gem");
+        list.add("randores.items.shard");
+        list.add("randores.items.dust");
     }
 
-    public int getQuantity() {
-        return this.quantity;
+    @Convert(value = 0, reflect = false)
+    private String value;
+
+    @ConversionConstructor
+    public MaterialTypeModel(@Index(0) String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return this.value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
 }

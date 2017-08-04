@@ -71,7 +71,7 @@
                       <text value="Material Properties:"/>
                     </properties>
                   </component>
-                  <grid id="b68bb" layout-manager="GridLayoutManager" row-count="10" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                  <grid id="b68bb" layout-manager="GridLayoutManager" row-count="11" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                     <margin top="0" left="0" bottom="0" right="0"/>
                     <constraints>
                       <grid row="3" column="1" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -79,7 +79,7 @@
                     <properties/>
                     <border type="etched"/>
                     <children>
-                      <component id="98226" class="javax.swing.JComboBox" binding="dimension">
+                      <component id="98226" class="javax.swing.JComboBox" binding="oreTypeCombo">
                         <constraints>
                           <grid row="0" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
@@ -92,12 +92,12 @@
                           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
-                          <text value="Dimension:"/>
+                          <text value="Known Types:"/>
                         </properties>
                       </component>
                       <component id="7faaf" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="Drops:"/>
@@ -105,7 +105,7 @@
                       </component>
                       <component id="3bb7a" class="javax.swing.JSpinner" binding="minDrops">
                         <constraints>
-                          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <toolTipText value="Minimum drops"/>
@@ -113,7 +113,7 @@
                       </component>
                       <component id="4b2c" class="javax.swing.JSpinner" binding="maxDrops">
                         <constraints>
-                          <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <toolTipText value="Maximum drops"/>
@@ -121,7 +121,7 @@
                       </component>
                       <component id="7fbbb" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="Vein Size:"/>
@@ -129,7 +129,7 @@
                       </component>
                       <component id="17364" class="javax.swing.JSpinner" binding="minVein">
                         <constraints>
-                          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <toolTipText value="Minium vein size"/>
@@ -137,7 +137,7 @@
                       </component>
                       <component id="e745e" class="javax.swing.JSpinner" binding="maxVein">
                         <constraints>
-                          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <toolTipText value="Maximum vein size"/>
@@ -145,7 +145,7 @@
                       </component>
                       <component id="656b5" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="Spawn Height:"/>
@@ -153,7 +153,7 @@
                       </component>
                       <component id="c8b9f" class="javax.swing.JSpinner" binding="minY">
                         <constraints>
-                          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <toolTipText value="Minimum spawn height"/>
@@ -161,7 +161,7 @@
                       </component>
                       <component id="244f" class="javax.swing.JSpinner" binding="maxY">
                         <constraints>
-                          <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <toolTipText value="Maximum spawn height"/>
@@ -169,7 +169,7 @@
                       </component>
                       <component id="35fa4" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="Occurrences:"/>
@@ -177,7 +177,7 @@
                       </component>
                       <component id="b4c4b" class="javax.swing.JSpinner" binding="minOccur">
                         <constraints>
-                          <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <toolTipText value="Minimum occurrences"/>
@@ -185,7 +185,7 @@
                       </component>
                       <component id="47b1e" class="javax.swing.JSpinner" binding="maxOccur">
                         <constraints>
-                          <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="5" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <toolTipText value="Maximum occurrences"/>
@@ -193,7 +193,7 @@
                       </component>
                       <component id="2dae" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="Harvest Level:"/>
@@ -201,7 +201,7 @@
                       </component>
                       <component id="56a2" class="javax.swing.JSpinner" binding="harvestLevel">
                         <constraints>
-                          <grid row="5" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="6" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <toolTipText value="Ore harvest level"/>
@@ -209,7 +209,7 @@
                       </component>
                       <component id="65df9" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="Smelting:"/>
@@ -217,7 +217,7 @@
                       </component>
                       <component id="1adb3" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="Hardness:"/>
@@ -225,7 +225,7 @@
                       </component>
                       <component id="99479" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="Resistance:"/>
@@ -233,7 +233,7 @@
                       </component>
                       <component id="daebe" class="javax.swing.JTextField" binding="hardness">
                         <constraints>
-                          <grid row="8" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                          <grid row="9" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                             <preferred-size width="150" height="-1"/>
                           </grid>
                         </constraints>
@@ -243,7 +243,7 @@
                       </component>
                       <component id="3d9ae" class="javax.swing.JTextField" binding="resistance">
                         <constraints>
-                          <grid row="9" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                          <grid row="10" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                             <preferred-size width="150" height="-1"/>
                           </grid>
                         </constraints>
@@ -253,7 +253,7 @@
                       </component>
                       <component id="eb248" class="javax.swing.JCheckBox" binding="requiresSmeltingCheckBox" default-binding="true">
                         <constraints>
-                          <grid row="6" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="7" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="Requires Smelting"/>
@@ -262,7 +262,7 @@
                       </component>
                       <component id="c08ba" class="javax.swing.JTextField" binding="smeltingXp">
                         <constraints>
-                          <grid row="7" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                          <grid row="8" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                             <preferred-size width="150" height="-1"/>
                           </grid>
                         </constraints>
@@ -272,15 +272,31 @@
                       </component>
                       <component id="b159b" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="Smelting XP:"/>
                         </properties>
                       </component>
+                      <component id="10a86" class="javax.swing.JTextField" binding="oreType">
+                        <constraints>
+                          <grid row="1" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                            <preferred-size width="150" height="-1"/>
+                          </grid>
+                        </constraints>
+                        <properties/>
+                      </component>
+                      <component id="56546" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="Type:"/>
+                        </properties>
+                      </component>
                     </children>
                   </grid>
-                  <grid id="800c7" layout-manager="GridLayoutManager" row-count="8" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                  <grid id="800c7" layout-manager="GridLayoutManager" row-count="9" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                     <margin top="0" left="0" bottom="0" right="0"/>
                     <constraints>
                       <grid row="4" column="1" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -293,12 +309,12 @@
                           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
-                          <text value="Type:"/>
+                          <text value="Known Types:"/>
                         </properties>
                       </component>
                       <component id="86481" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="Durability:"/>
@@ -306,7 +322,7 @@
                       </component>
                       <component id="887cc" class="javax.swing.JSpinner" binding="durability">
                         <constraints>
-                          <grid row="1" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="2" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <toolTipText value="Durability"/>
@@ -314,7 +330,7 @@
                       </component>
                       <component id="7fed0" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="Enchantability:"/>
@@ -322,7 +338,7 @@
                       </component>
                       <component id="7f4c6" class="javax.swing.JSpinner" binding="enchantability">
                         <constraints>
-                          <grid row="2" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="3" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <toolTipText value="Enchantability"/>
@@ -330,7 +346,7 @@
                       </component>
                       <component id="18282" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="Harvest Level:"/>
@@ -338,7 +354,7 @@
                       </component>
                       <component id="75adb" class="javax.swing.JSpinner" binding="harvestLevelTool">
                         <constraints>
-                          <grid row="3" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="4" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <toolTipText value="Tool harvest level"/>
@@ -346,7 +362,7 @@
                       </component>
                       <component id="b1530" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="Armor Reduction:"/>
@@ -354,7 +370,7 @@
                       </component>
                       <component id="41bce" class="javax.swing.JSpinner" binding="helmetReduction">
                         <constraints>
-                          <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <toolTipText value="Helmet reduction"/>
@@ -362,7 +378,7 @@
                       </component>
                       <component id="38ec5" class="javax.swing.JSpinner" binding="chestplateReduction">
                         <constraints>
-                          <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="5" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <toolTipText value="Chestplate reduction"/>
@@ -370,7 +386,7 @@
                       </component>
                       <component id="a25dc" class="javax.swing.JSpinner" binding="leggingsReduction">
                         <constraints>
-                          <grid row="4" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="5" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <toolTipText value="Leggings reduction"/>
@@ -378,13 +394,13 @@
                       </component>
                       <component id="dc427" class="javax.swing.JSpinner" binding="bootsReduction">
                         <constraints>
-                          <grid row="4" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="5" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <toolTipText value="Boots reduction"/>
                         </properties>
                       </component>
-                      <component id="3c1ae" class="javax.swing.JComboBox" binding="materialType">
+                      <component id="3c1ae" class="javax.swing.JComboBox" binding="materialTypeCombo">
                         <constraints>
                           <grid row="0" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
@@ -394,7 +410,7 @@
                       </component>
                       <component id="459e0" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="Efficiency:"/>
@@ -402,7 +418,7 @@
                       </component>
                       <component id="7b9e3" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="Damage:"/>
@@ -410,7 +426,7 @@
                       </component>
                       <component id="81ab9" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="Armor Toughness:"/>
@@ -418,7 +434,7 @@
                       </component>
                       <component id="94f09" class="javax.swing.JTextField" binding="armorToughness">
                         <constraints>
-                          <grid row="5" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                          <grid row="6" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                             <preferred-size width="150" height="-1"/>
                           </grid>
                         </constraints>
@@ -428,7 +444,7 @@
                       </component>
                       <component id="ac3d6" class="javax.swing.JTextField" binding="efficiency">
                         <constraints>
-                          <grid row="6" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                          <grid row="7" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                             <preferred-size width="150" height="-1"/>
                           </grid>
                         </constraints>
@@ -438,12 +454,28 @@
                       </component>
                       <component id="1bc1d" class="javax.swing.JTextField" binding="damage">
                         <constraints>
-                          <grid row="7" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                          <grid row="8" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                             <preferred-size width="150" height="-1"/>
                           </grid>
                         </constraints>
                         <properties>
                           <toolTipText value="Base damage"/>
+                        </properties>
+                      </component>
+                      <component id="6df21" class="javax.swing.JTextField" binding="materialType">
+                        <constraints>
+                          <grid row="1" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                            <preferred-size width="150" height="-1"/>
+                          </grid>
+                        </constraints>
+                        <properties/>
+                      </component>
+                      <component id="f062c" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="Type:"/>
                         </properties>
                       </component>
                     </children>
@@ -643,7 +675,7 @@
                               <text value="Craftables:"/>
                             </properties>
                           </component>
-                          <grid id="965ed" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                          <grid id="965ed" layout-manager="GridLayoutManager" row-count="1" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                             <margin top="0" left="0" bottom="0" right="0"/>
                             <constraints>
                               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -671,10 +703,18 @@
                               </component>
                               <component id="a095d" class="javax.swing.JButton" binding="addAllButton" default-binding="true">
                                 <constraints>
-                                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                  <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>
                                 <properties>
                                   <text value="Add All"/>
+                                </properties>
+                              </component>
+                              <component id="817e0" class="javax.swing.JButton" binding="editCraftable">
+                                <constraints>
+                                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                                <properties>
+                                  <text value="Edit"/>
                                 </properties>
                               </component>
                             </children>

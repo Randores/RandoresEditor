@@ -19,13 +19,41 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.randores.component;
+package com.gmail.socraticphoenix.randores.editor.model;
 
-public enum MaterialType {
-    INGOT,
-    GEM,
-    EMERALD,
-    CIRCLE_GEM,
-    SHARD,
-    DUST;
+import com.gmail.socraticphoenix.jlsc.value.annotation.ConversionConstructor;
+import com.gmail.socraticphoenix.jlsc.value.annotation.Convert;
+import com.gmail.socraticphoenix.jlsc.value.annotation.Convertible;
+import com.gmail.socraticphoenix.jlsc.value.annotation.Index;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Convertible
+public class OreTypeModel {
+    public static final List<String> KNOWN_ORE_TYPES = new ArrayList<>();
+
+    static {
+        List<String> list = KNOWN_ORE_TYPES;
+        list.add("overworld");
+        list.add("end");
+        list.add("nether");
+    }
+
+    @Convert(value = 0, reflect = false)
+    private String value;
+
+    @ConversionConstructor
+    public OreTypeModel(@Index(0) String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return this.value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
 }

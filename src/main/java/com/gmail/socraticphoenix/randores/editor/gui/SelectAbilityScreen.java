@@ -39,6 +39,8 @@ import javax.swing.WindowConstants;
 
 import java.awt.Font;
 import java.awt.Insets;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
 
 public class SelectAbilityScreen implements ChildScreen {
@@ -81,6 +83,13 @@ public class SelectAbilityScreen implements ChildScreen {
             ((DefaultListModel) this.abilityLists[this.flag].getModel()).addElement(pair.getA());
             this.abilityModelLists[this.flag].add(pair.getA());
             this.screen.refreshAbilities();
+        });
+
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                screen.getAssociatedWindows().remove(frame);
+            }
         });
 
         frame.add(this.panel1);

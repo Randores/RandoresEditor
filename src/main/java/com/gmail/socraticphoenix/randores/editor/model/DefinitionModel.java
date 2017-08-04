@@ -27,8 +27,6 @@ import com.gmail.socraticphoenix.jlsc.serialization.annotation.SerializationCons
 import com.gmail.socraticphoenix.jlsc.serialization.annotation.Serialize;
 import com.gmail.socraticphoenix.randores.editor.model.ability.AbilitySeriesModel;
 import com.gmail.socraticphoenix.randores.editor.model.property.PropertyModel;
-import com.gmail.socraticphoenix.randores.component.Dimension;
-import com.gmail.socraticphoenix.randores.component.MaterialType;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -67,8 +65,8 @@ public class DefinitionModel implements WritableModel {
     public static DefinitionModel getDefault() {
         return new DefinitionModel(Color.BLACK, "",
                 new OreComponentModel(
-                        new MaterialComponentModel(MaterialType.INGOT, new int[]{0, 0, 0, 0}, 1, 100, 1f, 1f, 0f, 0)
-                        , Dimension.OVERWORLD, 1, 1, 1, 1, 255, 0, 1, 1, true, 0f, 3f, 3f, 1)
+                        new MaterialComponentModel(new MaterialTypeModel("randores.items.ingot"), new int[]{0, 0, 0, 0}, 1, 100, 1f, 1f, 0f, 0)
+                        , new OreTypeModel("overworld"), 1, 1, 1, 1, 255, 0, 1, 1, true, 0f, 3f, 3f, 1)
                 , new ArrayList<>(), new ArrayList<>(), new AbilitySeriesModel(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>()));
     }
 

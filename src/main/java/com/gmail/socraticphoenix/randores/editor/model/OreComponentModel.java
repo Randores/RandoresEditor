@@ -25,14 +25,13 @@ import com.gmail.socraticphoenix.jlsc.serialization.annotation.Name;
 import com.gmail.socraticphoenix.jlsc.serialization.annotation.Serializable;
 import com.gmail.socraticphoenix.jlsc.serialization.annotation.SerializationConstructor;
 import com.gmail.socraticphoenix.jlsc.serialization.annotation.Serialize;
-import com.gmail.socraticphoenix.randores.component.Dimension;
 
 @Serializable
 public class OreComponentModel implements ComponentModel {
     @Serialize(value = "material", reflect = false)
     private MaterialComponentModel material;
-    @Serialize(value = "dimension", reflect = false)
-    private Dimension dimension;
+    @Serialize(value = "oreType", reflect = false)
+    private OreTypeModel oreType;
 
     @Serialize(value = "minDrops", reflect = false)
     private int minDrops;
@@ -68,9 +67,9 @@ public class OreComponentModel implements ComponentModel {
     private int harvestLevel;
 
     @SerializationConstructor
-    public OreComponentModel(@Name("material") MaterialComponentModel material, @Name("dimension") Dimension dimension, @Name("maxDrops") int maxDrops, @Name("minDrops") int minDrops, @Name("maxVein") int maxVein, @Name("minVein") int minVein, @Name("maxY") int maxY, @Name("minY") int minY, @Name("minOccurrences") int minOccurrences, @Name("maxOccurrences") int maxOccurrences, @Name("requiresSmelting") boolean requiresSmelting, @Name("smeltingXp") float smeltingXp, @Name("hardness") float hardness, @Name("resistance") float resistance, @Name("harvestLevel") int harvestLevel) {
+    public OreComponentModel(@Name("material") MaterialComponentModel material, @Name("oreType") OreTypeModel oreType, @Name("maxDrops") int maxDrops, @Name("minDrops") int minDrops, @Name("maxVein") int maxVein, @Name("minVein") int minVein, @Name("maxY") int maxY, @Name("minY") int minY, @Name("minOccurrences") int minOccurrences, @Name("maxOccurrences") int maxOccurrences, @Name("requiresSmelting") boolean requiresSmelting, @Name("smeltingXp") float smeltingXp, @Name("hardness") float hardness, @Name("resistance") float resistance, @Name("harvestLevel") int harvestLevel) {
         this.material = material;
-        this.dimension = dimension;
+        this.oreType = oreType;
         this.maxDrops = maxDrops;
         this.minDrops = minDrops;
         this.maxVein = maxVein;
@@ -95,12 +94,12 @@ public class OreComponentModel implements ComponentModel {
         return this;
     }
 
-    public Dimension getDimension() {
-        return this.dimension;
+    public OreTypeModel getOreType() {
+        return this.oreType;
     }
 
-    public OreComponentModel setDimension(Dimension dimension) {
-        this.dimension = dimension;
+    public OreComponentModel setOreType(OreTypeModel oreType) {
+        this.oreType = oreType;
         return this;
     }
 
@@ -223,7 +222,7 @@ public class OreComponentModel implements ComponentModel {
 
     @Override
     public String write() {
-        return "ore[type=" + this.material.getType() + ", dimension=" + this.dimension + "]";
+        return "ore[material=" + this.material.getType().getValue() + ", type=" + this.oreType.getValue() + "]";
     }
 
     public String toString() {

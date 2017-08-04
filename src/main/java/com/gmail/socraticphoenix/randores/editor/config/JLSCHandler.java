@@ -24,6 +24,9 @@ package com.gmail.socraticphoenix.randores.editor.config;
 import com.gmail.socraticphoenix.jlsc.registry.JLSCRegistry;
 import com.gmail.socraticphoenix.jlsc.serialization.JLSCCollectionSerializer;
 import com.gmail.socraticphoenix.randores.editor.model.CraftableModel;
+import com.gmail.socraticphoenix.randores.editor.model.CraftableTypeModel;
+import com.gmail.socraticphoenix.randores.editor.model.MaterialTypeModel;
+import com.gmail.socraticphoenix.randores.editor.model.OreTypeModel;
 import com.gmail.socraticphoenix.randores.editor.model.ability.AbilityModel;
 import com.gmail.socraticphoenix.randores.editor.model.ability.PotionEffectModel;
 import com.gmail.socraticphoenix.randores.editor.model.ability.PotionModel;
@@ -36,6 +39,11 @@ public class JLSCHandler {
 
     public static void init() {
         JLSCRegistry.register(new JLSCColorProcessor());
+
+        JLSCRegistry.registerAnnotated(MaterialTypeModel.class, false, "materialType");
+        JLSCRegistry.registerAnnotated(OreTypeModel.class, false, "oreType");
+        JLSCRegistry.registerAnnotated(CraftableTypeModel.class, false, "craftableType");
+
         JLSCRegistry.register(new JLSCCollectionSerializer(ArrayList.class, PropertyModel.class, false, ArrayList::new, "arrayList"));
         JLSCRegistry.register(new JLSCCollectionSerializer(ArrayList.class, AbilityModel.class, false, ArrayList::new, "arrayList"));
         JLSCRegistry.register(new JLSCCollectionSerializer(ArrayList.class, CraftableModel.class, false, ArrayList::new, "arrayList"));

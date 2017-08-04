@@ -21,18 +21,16 @@
  */
 package com.gmail.socraticphoenix.randores.editor.gui;
 
-import com.gmail.socraticphoenix.collect.coupling.Pair;
-import com.gmail.socraticphoenix.randores.editor.gui.property.PropertyScreenRegistry;
-import com.gmail.socraticphoenix.randores.editor.model.property.PropertyModel;
+import com.gmail.socraticphoenix.randores.editor.model.CraftableModel;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.WindowConstants;
 
 import java.awt.Font;
@@ -40,39 +38,31 @@ import java.awt.Insets;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class SelectPropertyScreen implements ChildScreen {
-    private JComboBox propertyType;
-    private JButton createButton;
-    private JButton cancelButton;
+public class EditCraftableScreen implements ChildScreen {
+    private JSpinner quantity;
+    private JButton doneButton;
     private JPanel panel1;
 
+    private CraftableModel model;
     private ProjectScreen screen;
 
-    public SelectPropertyScreen(ProjectScreen screen) {
+    public EditCraftableScreen(CraftableModel model, ProjectScreen screen) {
+        this.model = model;
         this.screen = screen;
     }
 
     @Override
     public JFrame initAndShow() {
-        JFrame frame = new JFrame("Select Property");
+        JFrame frame = new JFrame("Edit Craftable Component");
 
-        PropertyScreenRegistry.keys().forEach(this.propertyType::addItem);
-        this.cancelButton.addActionListener(e -> {
-            frame.dispose();
-            this.screen.getAssociatedWindows().remove(frame);
+        this.quantity.setModel(new SpinnerNumberModel(1, 1, null, 1));
+        this.quantity.setValue(this.model.getQuantity());
+        this.quantity.addChangeListener(e -> {
+            this.model.setQuantity((int) this.quantity.getValue());
+            this.screen.refreshCraftables();
         });
-        this.createButton.addActionListener(e -> {
-            String selection = String.valueOf(this.propertyType.getSelectedItem());
+        this.doneButton.addActionListener(e -> {
             frame.dispose();
-            this.screen.getAssociatedWindows().remove(frame);
-
-            Pair<PropertyModel, ChildScreen> pair = PropertyScreenRegistry.openDefault(selection, this.screen);
-            JFrame cre = pair.getB().initAndShow();
-            this.screen.getAssociatedWindows().add(cre);
-
-            ((DefaultListModel) this.screen.getProperties().getModel()).addElement(pair.getA());
-            this.screen.getModel().get().getPropertiesList().add(pair.getA());
-            this.screen.refreshProperties();
         });
         frame.addWindowListener(new WindowAdapter() {
             @Override
@@ -80,11 +70,11 @@ public class SelectPropertyScreen implements ChildScreen {
                 screen.getAssociatedWindows().remove(frame);
             }
         });
+
         frame.add(this.panel1);
-        frame.setSize(600, 100);
+        frame.setSize(400, 100);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
-
         return frame;
     }
 
@@ -125,19 +115,13 @@ public class SelectPropertyScreen implements ChildScreen {
         panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
         final JLabel label1 = new JLabel();
-        label1.setText("Property Type:");
+        label1.setText("Quantity:");
         panel1.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        propertyType = new JComboBox();
-        panel1.add(propertyType, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
-        panel1.add(panel2, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        cancelButton = new JButton();
-        cancelButton.setText("Cancel");
-        panel2.add(cancelButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        createButton = new JButton();
-        createButton.setText("Create");
-        panel2.add(createButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        quantity = new JSpinner();
+        panel1.add(quantity, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        doneButton = new JButton();
+        doneButton.setText("Done");
+        panel1.add(doneButton, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

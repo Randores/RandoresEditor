@@ -33,13 +33,14 @@ import com.gmail.socraticphoenix.parse.ParseResult;
 import com.gmail.socraticphoenix.randores.editor.gui.ability.AbilityScreenRegistry;
 import com.gmail.socraticphoenix.randores.editor.gui.property.PropertyScreenRegistry;
 import com.gmail.socraticphoenix.randores.editor.model.CraftableModel;
+import com.gmail.socraticphoenix.randores.editor.model.CraftableTypeModel;
 import com.gmail.socraticphoenix.randores.editor.model.DefinitionModel;
 import com.gmail.socraticphoenix.randores.editor.model.MaterialComponentModel;
+import com.gmail.socraticphoenix.randores.editor.model.MaterialTypeModel;
 import com.gmail.socraticphoenix.randores.editor.model.OreComponentModel;
+import com.gmail.socraticphoenix.randores.editor.model.OreTypeModel;
 import com.gmail.socraticphoenix.randores.editor.model.ability.AbilityModel;
 import com.gmail.socraticphoenix.randores.editor.model.property.PropertyModel;
-import com.gmail.socraticphoenix.randores.component.CraftableType;
-import com.gmail.socraticphoenix.randores.component.MaterialType;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import javax.swing.BorderFactory;
@@ -89,7 +90,7 @@ import static com.gmail.socraticphoenix.randores.editor.gui.LinkedSpinnerModel.d
 public class ProjectScreen {
     private JList definitions;
     private JTextField name;
-    private JComboBox dimension;
+    private JComboBox oreTypeCombo;
     private JSpinner minDrops;
     private JSpinner maxDrops;
     private JSpinner minVein;
@@ -103,7 +104,7 @@ public class ProjectScreen {
     private JTextField resistance;
     private JCheckBox requiresSmeltingCheckBox;
     private JTextField smeltingXp;
-    private JComboBox materialType;
+    private JComboBox materialTypeCombo;
     private JSpinner durability;
     private JSpinner enchantability;
     private JSpinner harvestLevelTool;
@@ -144,6 +145,9 @@ public class ProjectScreen {
     private JButton loadButton;
     private JPanel rootPanel;
     private JButton addAllButton;
+    private JTextField oreType;
+    private JTextField materialType;
+    private JButton editCraftable;
 
     private DefinitionModel currentModel;
 
@@ -229,13 +233,19 @@ public class ProjectScreen {
         this.floatListener(this.efficiency);
         this.floatListener(this.damage);
 
-        for (com.gmail.socraticphoenix.randores.component.Dimension dimension : com.gmail.socraticphoenix.randores.component.Dimension.values()) {
-            this.dimension.addItem(dimension.name());
+        for (String oreType : OreTypeModel.KNOWN_ORE_TYPES) {
+            this.oreTypeCombo.addItem(oreType);
         }
 
-        for (MaterialType type : MaterialType.values()) {
-            this.materialType.addItem(type.name());
+        for (String materialType : MaterialTypeModel.KNOWN_MATERIAL_TYPES) {
+            this.materialTypeCombo.addItem(materialType);
         }
+
+        this.oreType.setText(OreTypeModel.KNOWN_ORE_TYPES.get(0));
+        this.materialType.setText(MaterialTypeModel.KNOWN_MATERIAL_TYPES.get(0));
+
+        this.oreTypeCombo.addActionListener(e -> this.oreType.setText(String.valueOf(this.oreTypeCombo.getSelectedItem())));
+        this.materialTypeCombo.addActionListener(e -> this.materialType.setText(String.valueOf(this.materialTypeCombo.getSelectedItem())));
 
         this.colorChooser = new JColorChooser();
         this.colorChooser.getSelectionModel().addChangeListener(e -> {
@@ -286,9 +296,6 @@ public class ProjectScreen {
         this.updateText(this.efficiency, ProjectScreen::parseFloat, (d, f) -> d.getOre().getMaterial().setEfficiency(f));
         this.updateText(this.damage, ProjectScreen::parseFloat, (d, f) -> d.getOre().getMaterial().setDamage(f));
 
-        this.updateCombo(this.dimension, v -> com.gmail.socraticphoenix.randores.component.Dimension.valueOf(String.valueOf(v.getSelectedItem())), (d, k) -> d.getOre().setDimension(k));
-        this.updateCombo(this.materialType, v -> MaterialType.valueOf(String.valueOf(v.getSelectedItem())), (d, t) -> d.getOre().getMaterial().setType(t));
-
         this.updateColor(this.colorChooser, JColorChooser::getColor, DefinitionModel::setColor);
 
         this.updateText(this.name, JTextComponent::getText, (d, n) -> {
@@ -331,7 +338,9 @@ public class ProjectScreen {
                 this.associatedWindows.clear();
                 this.currentModel = (DefinitionModel) this.definitions.getSelectedValue();
                 if (this.currentModel != null) {
-                    this.setAllTo((DefinitionModel) this.definitions.getSelectedValue());
+                    EventQueue.invokeLater(() -> {
+                        this.setAllTo((DefinitionModel) this.definitions.getSelectedValue());
+                    });
                 }
             }
         });
@@ -446,16 +455,27 @@ public class ProjectScreen {
             }
         });
 
+        this.editCraftable.addActionListener(e -> {
+            if (this.getModel().isPresent()) {
+                CraftableModel model = (CraftableModel) this.craftables.getSelectedValue();
+                if (model != null) {
+                    EditCraftableScreen edit = new EditCraftableScreen(model, this);
+                    JFrame cre = edit.initAndShow();
+                    this.associatedWindows.add(cre);
+                }
+            }
+        });
+
         this.addAllButton.addActionListener(e -> {
             if (this.getModel().isPresent()) {
-                List<CraftableType> toAdd = new ArrayList<>();
-                for (CraftableType type : CraftableType.values()) {
-                    if (this.getModel().get().getCraftables().stream().noneMatch(c -> c.getType() == type)) {
-                        toAdd.add(type);
+                List<CraftableTypeModel> toAdd = new ArrayList<>();
+                for (String type : CraftableTypeModel.KNOWN_CRAFTABLE_TYPES) {
+                    if (this.getModel().get().getCraftables().stream().noneMatch(c -> c.getType().getValue().equals(type))) {
+                        toAdd.add(new CraftableTypeModel(type));
                     }
                 }
                 toAdd.forEach(t -> {
-                    CraftableModel craftableModel = new CraftableModel(t, t.getQuantity());
+                    CraftableModel craftableModel = new CraftableModel(t, CraftableTypeModel.KNOWN_SIZES.getOrDefault(t.getValue(), 1));//TODO fix
                     this.getModel().get().getCraftables().add(craftableModel);
                     ((DefaultListModel) this.craftables.getModel()).addElement(craftableModel);
                 });
@@ -579,7 +599,8 @@ public class ProjectScreen {
         this.setListData(abilitiesArmorActive, model.getAbilitySeries().getArmorActive().toArray());
 
         OreComponentModel ore = model.getOre();
-        this.dimension.setSelectedItem(ore.getDimension().name());
+        this.oreTypeCombo.setSelectedItem(ore.getOreType().getValue());
+        this.oreType.setText(ore.getOreType().getValue());
         this.reset(minDrops, maxDrops, ore.getMinDrops(), ore.getMaxDrops());
         this.reset(minVein, maxVein, ore.getMinVein(), ore.getMaxVein());
         this.reset(minY, maxY, ore.getMinY(), ore.getMaxY());
@@ -591,7 +612,8 @@ public class ProjectScreen {
         this.reset(resistance, ore.getResistance());
 
         MaterialComponentModel material = ore.getMaterial();
-        this.materialType.setSelectedItem(material.getType().name());
+        this.materialTypeCombo.setSelectedItem(material.getType().getValue());
+        this.materialType.setText(material.getType().getValue());
         this.durability.setValue(material.getMaxUses());
         this.enchantability.setValue(material.getEnchantability());
         this.harvestLevelTool.setValue(material.getHarvestLevel());
@@ -776,153 +798,163 @@ public class ProjectScreen {
         label4.setText("Material Properties:");
         panel2.add(label4, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(10, 3, new Insets(0, 0, 0, 0), -1, -1));
+        panel3.setLayout(new GridLayoutManager(11, 3, new Insets(0, 0, 0, 0), -1, -1));
         panel2.add(panel3, new GridConstraints(3, 1, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         panel3.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), null));
-        dimension = new JComboBox();
-        dimension.setToolTipText("Generation dimension");
-        panel3.add(dimension, new GridConstraints(0, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        oreTypeCombo = new JComboBox();
+        oreTypeCombo.setToolTipText("Generation dimension");
+        panel3.add(oreTypeCombo, new GridConstraints(0, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label5 = new JLabel();
-        label5.setText("Dimension:");
+        label5.setText("Known Types:");
         panel3.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label6 = new JLabel();
         label6.setText("Drops:");
-        panel3.add(label6, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(label6, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         minDrops = new JSpinner();
         minDrops.setToolTipText("Minimum drops");
-        panel3.add(minDrops, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(minDrops, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         maxDrops = new JSpinner();
         maxDrops.setToolTipText("Maximum drops");
-        panel3.add(maxDrops, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(maxDrops, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label7 = new JLabel();
         label7.setText("Vein Size:");
-        panel3.add(label7, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(label7, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         minVein = new JSpinner();
         minVein.setToolTipText("Minium vein size");
-        panel3.add(minVein, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(minVein, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         maxVein = new JSpinner();
         maxVein.setToolTipText("Maximum vein size");
-        panel3.add(maxVein, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(maxVein, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label8 = new JLabel();
         label8.setText("Spawn Height:");
-        panel3.add(label8, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(label8, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         minY = new JSpinner();
         minY.setToolTipText("Minimum spawn height");
-        panel3.add(minY, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(minY, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         maxY = new JSpinner();
         maxY.setToolTipText("Maximum spawn height");
-        panel3.add(maxY, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(maxY, new GridConstraints(4, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label9 = new JLabel();
         label9.setText("Occurrences:");
-        panel3.add(label9, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(label9, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         minOccur = new JSpinner();
         minOccur.setToolTipText("Minimum occurrences");
-        panel3.add(minOccur, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(minOccur, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         maxOccur = new JSpinner();
         maxOccur.setToolTipText("Maximum occurrences");
-        panel3.add(maxOccur, new GridConstraints(4, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(maxOccur, new GridConstraints(5, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label10 = new JLabel();
         label10.setText("Harvest Level:");
-        panel3.add(label10, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(label10, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         harvestLevel = new JSpinner();
         harvestLevel.setToolTipText("Ore harvest level");
-        panel3.add(harvestLevel, new GridConstraints(5, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(harvestLevel, new GridConstraints(6, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label11 = new JLabel();
         label11.setText("Smelting:");
-        panel3.add(label11, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(label11, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label12 = new JLabel();
         label12.setText("Hardness:");
-        panel3.add(label12, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(label12, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label13 = new JLabel();
         label13.setText("Resistance:");
-        panel3.add(label13, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(label13, new GridConstraints(10, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         hardness = new JTextField();
         hardness.setToolTipText("Hardness");
-        panel3.add(hardness, new GridConstraints(8, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel3.add(hardness, new GridConstraints(9, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         resistance = new JTextField();
         resistance.setToolTipText("Explosion resistance");
-        panel3.add(resistance, new GridConstraints(9, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel3.add(resistance, new GridConstraints(10, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         requiresSmeltingCheckBox = new JCheckBox();
         requiresSmeltingCheckBox.setText("Requires Smelting");
         requiresSmeltingCheckBox.setToolTipText("Requires smelting");
-        panel3.add(requiresSmeltingCheckBox, new GridConstraints(6, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(requiresSmeltingCheckBox, new GridConstraints(7, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         smeltingXp = new JTextField();
         smeltingXp.setToolTipText("Smelting experience");
-        panel3.add(smeltingXp, new GridConstraints(7, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel3.add(smeltingXp, new GridConstraints(8, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         final JLabel label14 = new JLabel();
         label14.setText("Smelting XP:");
-        panel3.add(label14, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel4 = new JPanel();
-        panel4.setLayout(new GridLayoutManager(8, 5, new Insets(0, 0, 0, 0), -1, -1));
-        panel2.add(panel4, new GridConstraints(4, 1, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        panel4.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), null));
+        panel3.add(label14, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        oreType = new JTextField();
+        panel3.add(oreType, new GridConstraints(1, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         final JLabel label15 = new JLabel();
         label15.setText("Type:");
-        panel4.add(label15, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(label15, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel4 = new JPanel();
+        panel4.setLayout(new GridLayoutManager(9, 5, new Insets(0, 0, 0, 0), -1, -1));
+        panel2.add(panel4, new GridConstraints(4, 1, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel4.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), null));
         final JLabel label16 = new JLabel();
-        label16.setText("Durability:");
-        panel4.add(label16, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        label16.setText("Known Types:");
+        panel4.add(label16, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label17 = new JLabel();
+        label17.setText("Durability:");
+        panel4.add(label17, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         durability = new JSpinner();
         durability.setToolTipText("Durability");
-        panel4.add(durability, new GridConstraints(1, 1, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label17 = new JLabel();
-        label17.setText("Enchantability:");
-        panel4.add(label17, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel4.add(durability, new GridConstraints(2, 1, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label18 = new JLabel();
+        label18.setText("Enchantability:");
+        panel4.add(label18, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         enchantability = new JSpinner();
         enchantability.setToolTipText("Enchantability");
-        panel4.add(enchantability, new GridConstraints(2, 1, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label18 = new JLabel();
-        label18.setText("Harvest Level:");
-        panel4.add(label18, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel4.add(enchantability, new GridConstraints(3, 1, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label19 = new JLabel();
+        label19.setText("Harvest Level:");
+        panel4.add(label19, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         harvestLevelTool = new JSpinner();
         harvestLevelTool.setToolTipText("Tool harvest level");
-        panel4.add(harvestLevelTool, new GridConstraints(3, 1, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label19 = new JLabel();
-        label19.setText("Armor Reduction:");
-        panel4.add(label19, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel4.add(harvestLevelTool, new GridConstraints(4, 1, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label20 = new JLabel();
+        label20.setText("Armor Reduction:");
+        panel4.add(label20, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         helmetReduction = new JSpinner();
         helmetReduction.setToolTipText("Helmet reduction");
-        panel4.add(helmetReduction, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel4.add(helmetReduction, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         chestplateReduction = new JSpinner();
         chestplateReduction.setToolTipText("Chestplate reduction");
-        panel4.add(chestplateReduction, new GridConstraints(4, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel4.add(chestplateReduction, new GridConstraints(5, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         leggingsReduction = new JSpinner();
         leggingsReduction.setToolTipText("Leggings reduction");
-        panel4.add(leggingsReduction, new GridConstraints(4, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel4.add(leggingsReduction, new GridConstraints(5, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         bootsReduction = new JSpinner();
         bootsReduction.setToolTipText("Boots reduction");
-        panel4.add(bootsReduction, new GridConstraints(4, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        materialType = new JComboBox();
-        materialType.setToolTipText("Material type");
-        panel4.add(materialType, new GridConstraints(0, 1, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label20 = new JLabel();
-        label20.setText("Efficiency:");
-        panel4.add(label20, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel4.add(bootsReduction, new GridConstraints(5, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        materialTypeCombo = new JComboBox();
+        materialTypeCombo.setToolTipText("Material type");
+        panel4.add(materialTypeCombo, new GridConstraints(0, 1, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label21 = new JLabel();
-        label21.setText("Damage:");
+        label21.setText("Efficiency:");
         panel4.add(label21, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label22 = new JLabel();
-        label22.setText("Armor Toughness:");
-        panel4.add(label22, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        label22.setText("Damage:");
+        panel4.add(label22, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label23 = new JLabel();
+        label23.setText("Armor Toughness:");
+        panel4.add(label23, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         armorToughness = new JTextField();
         armorToughness.setToolTipText("Armor toughness");
-        panel4.add(armorToughness, new GridConstraints(5, 1, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel4.add(armorToughness, new GridConstraints(6, 1, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         efficiency = new JTextField();
         efficiency.setToolTipText("Efficiency");
-        panel4.add(efficiency, new GridConstraints(6, 1, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel4.add(efficiency, new GridConstraints(7, 1, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         damage = new JTextField();
         damage.setToolTipText("Base damage");
-        panel4.add(damage, new GridConstraints(7, 1, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel4.add(damage, new GridConstraints(8, 1, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        materialType = new JTextField();
+        panel4.add(materialType, new GridConstraints(1, 1, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        final JLabel label24 = new JLabel();
+        label24.setText("Type:");
+        panel4.add(label24, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         colorExample = new JPanel();
         colorExample.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         colorExample.setBackground(new Color(-16777216));
         colorExample.setToolTipText("Set color");
         panel2.add(colorExample, new GridConstraints(2, 1, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JLabel label23 = new JLabel();
-        Font label23Font = this.$$$getFont$$$(null, -1, 14, label23.getFont());
-        if (label23Font != null) label23.setFont(label23Font);
-        label23.setText("Current Definition Properties:");
-        panel2.add(label23, new GridConstraints(0, 0, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label25 = new JLabel();
+        Font label25Font = this.$$$getFont$$$(null, -1, 14, label25.getFont());
+        if (label25Font != null) label25.setFont(label25Font);
+        label25.setText("Current Definition Properties:");
+        panel2.add(label25, new GridConstraints(0, 0, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel5 = new JPanel();
         panel5.setLayout(new GridLayoutManager(3, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel5, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -941,11 +973,11 @@ public class ProjectScreen {
         removeButton.setText("Remove");
         removeButton.setToolTipText("Remove selected definition");
         panel5.add(removeButton, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label24 = new JLabel();
-        Font label24Font = this.$$$getFont$$$(null, -1, 14, label24.getFont());
-        if (label24Font != null) label24.setFont(label24Font);
-        label24.setText("Material Definitions:");
-        panel5.add(label24, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label26 = new JLabel();
+        Font label26Font = this.$$$getFont$$$(null, -1, 14, label26.getFont());
+        if (label26Font != null) label26.setFont(label26Font);
+        label26.setText("Material Definitions:");
+        panel5.add(label26, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel6 = new JPanel();
         panel6.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel6, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -964,9 +996,9 @@ public class ProjectScreen {
         abilitiesProjectile.setSelectionMode(0);
         abilitiesProjectile.setToolTipText("Projectile abilities");
         scrollPane3.setViewportView(abilitiesProjectile);
-        final JLabel label25 = new JLabel();
-        label25.setText("Projectile Abilities:");
-        panel8.add(label25, new GridConstraints(0, 0, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label27 = new JLabel();
+        label27.setText("Projectile Abilities:");
+        panel8.add(label27, new GridConstraints(0, 0, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel9 = new JPanel();
         panel9.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         panel8.add(panel9, new GridConstraints(3, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -992,11 +1024,11 @@ public class ProjectScreen {
         craftables.setSelectionMode(0);
         craftables.setToolTipText("Craftable components");
         scrollPane4.setViewportView(craftables);
-        final JLabel label26 = new JLabel();
-        label26.setText("Craftables:");
-        panel10.add(label26, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label28 = new JLabel();
+        label28.setText("Craftables:");
+        panel10.add(label28, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel11 = new JPanel();
-        panel11.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
+        panel11.setLayout(new GridLayoutManager(1, 4, new Insets(0, 0, 0, 0), -1, -1));
         panel10.add(panel11, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         addCraftable = new JButton();
         addCraftable.setText("Add");
@@ -1008,7 +1040,10 @@ public class ProjectScreen {
         panel11.add(removeCraftable, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         addAllButton = new JButton();
         addAllButton.setText("Add All");
-        panel11.add(addAllButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel11.add(addAllButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        editCraftable = new JButton();
+        editCraftable.setText("Edit");
+        panel11.add(editCraftable, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel12 = new JPanel();
         panel12.setLayout(new GridLayoutManager(4, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel7.add(panel12, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -1019,9 +1054,9 @@ public class ProjectScreen {
         abilitiesMelee.setSelectionMode(0);
         abilitiesMelee.setToolTipText("Melee abilities");
         scrollPane5.setViewportView(abilitiesMelee);
-        final JLabel label27 = new JLabel();
-        label27.setText("Melee Abilities:");
-        panel12.add(label27, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label29 = new JLabel();
+        label29.setText("Melee Abilities:");
+        panel12.add(label29, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel13 = new JPanel();
         panel13.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         panel12.add(panel13, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -1051,9 +1086,9 @@ public class ProjectScreen {
         abilitiesArmorPassive.setSelectionMode(0);
         abilitiesArmorPassive.setToolTipText("Passive armor abilities");
         scrollPane6.setViewportView(abilitiesArmorPassive);
-        final JLabel label28 = new JLabel();
-        label28.setText("Passive Armor:");
-        panel15.add(label28, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label30 = new JLabel();
+        label30.setText("Passive Armor:");
+        panel15.add(label30, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel16 = new JPanel();
         panel16.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         panel15.add(panel16, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -1081,9 +1116,9 @@ public class ProjectScreen {
         properties.setSelectionMode(0);
         properties.setToolTipText("Properties");
         scrollPane7.setViewportView(properties);
-        final JLabel label29 = new JLabel();
-        label29.setText("Properties:");
-        panel17.add(label29, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label31 = new JLabel();
+        label31.setText("Properties:");
+        panel17.add(label31, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel18 = new JPanel();
         panel18.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         panel17.add(panel18, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -1109,9 +1144,9 @@ public class ProjectScreen {
         abilitiesArmorActive.setSelectionMode(0);
         abilitiesArmorActive.setToolTipText("Active armor abilities");
         scrollPane8.setViewportView(abilitiesArmorActive);
-        final JLabel label30 = new JLabel();
-        label30.setText("Active Armor:");
-        panel19.add(label30, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label32 = new JLabel();
+        label32.setText("Active Armor:");
+        panel19.add(label32, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel20 = new JPanel();
         panel20.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         panel19.add(panel20, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -1127,12 +1162,12 @@ public class ProjectScreen {
         editActive.setText("Edit");
         editActive.setToolTipText("Edit selected active armor ability");
         panel20.add(editActive, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label31 = new JLabel();
-        label31.setEnabled(true);
-        Font label31Font = this.$$$getFont$$$(null, -1, 14, label31.getFont());
-        if (label31Font != null) label31.setFont(label31Font);
-        label31.setText("Current Definition Properties:");
-        panel6.add(label31, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label33 = new JLabel();
+        label33.setEnabled(true);
+        Font label33Font = this.$$$getFont$$$(null, -1, 14, label33.getFont());
+        if (label33Font != null) label33.setFont(label33Font);
+        label33.setText("Current Definition Properties:");
+        panel6.add(label33, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel21 = new JPanel();
         panel21.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel21, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

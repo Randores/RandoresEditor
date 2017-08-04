@@ -38,7 +38,8 @@ import com.gmail.socraticphoenix.randores.editor.model.MaterialComponentModel;
 import com.gmail.socraticphoenix.randores.editor.model.OreComponentModel;
 import com.gmail.socraticphoenix.randores.editor.model.ability.AbilityModel;
 import com.gmail.socraticphoenix.randores.editor.model.property.PropertyModel;
-import com.gmail.socraticphoenix.randores.mod.component.MaterialType;
+import com.gmail.socraticphoenix.randores.component.CraftableType;
+import com.gmail.socraticphoenix.randores.component.MaterialType;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import javax.swing.BorderFactory;
@@ -75,6 +76,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -141,6 +143,7 @@ public class ProjectScreen {
     private JButton exportButton;
     private JButton loadButton;
     private JPanel rootPanel;
+    private JButton addAllButton;
 
     private DefinitionModel currentModel;
 
@@ -226,7 +229,7 @@ public class ProjectScreen {
         this.floatListener(this.efficiency);
         this.floatListener(this.damage);
 
-        for (com.gmail.socraticphoenix.randores.mod.component.Dimension dimension : com.gmail.socraticphoenix.randores.mod.component.Dimension.values()) {
+        for (com.gmail.socraticphoenix.randores.component.Dimension dimension : com.gmail.socraticphoenix.randores.component.Dimension.values()) {
             this.dimension.addItem(dimension.name());
         }
 
@@ -283,7 +286,7 @@ public class ProjectScreen {
         this.updateText(this.efficiency, ProjectScreen::parseFloat, (d, f) -> d.getOre().getMaterial().setEfficiency(f));
         this.updateText(this.damage, ProjectScreen::parseFloat, (d, f) -> d.getOre().getMaterial().setDamage(f));
 
-        this.updateCombo(this.dimension, v -> com.gmail.socraticphoenix.randores.mod.component.Dimension.valueOf(String.valueOf(v.getSelectedItem())), (d, k) -> d.getOre().setDimension(k));
+        this.updateCombo(this.dimension, v -> com.gmail.socraticphoenix.randores.component.Dimension.valueOf(String.valueOf(v.getSelectedItem())), (d, k) -> d.getOre().setDimension(k));
         this.updateCombo(this.materialType, v -> MaterialType.valueOf(String.valueOf(v.getSelectedItem())), (d, t) -> d.getOre().getMaterial().setType(t));
 
         this.updateColor(this.colorChooser, JColorChooser::getColor, DefinitionModel::setColor);
@@ -334,23 +337,37 @@ public class ProjectScreen {
         });
 
         this.addProperty.addActionListener(e -> {
-            JFrame frame = new SelectPropertyScreen(this).initAndShow();
-            this.associatedWindows.add(frame);
+            if (this.getModel().isPresent()) {
+                JFrame frame = new SelectPropertyScreen(this).initAndShow();
+                this.associatedWindows.add(frame);
+            }
         });
 
         this.removeProperty.addActionListener(e -> {
-            PropertyModel propertyModel = (PropertyModel) this.properties.getSelectedValue();
-            if (propertyModel != null) {
-                ((DefaultListModel) this.properties.getModel()).removeElement(propertyModel);
+            if (this.getModel().isPresent()) {
+                PropertyModel propertyModel = (PropertyModel) this.properties.getSelectedValue();
+                if (propertyModel != null) {
+                    int index = this.properties.getSelectedIndex();
+                    index = index == 0 ? 0 : index - 1;
+
+                    ((DefaultListModel) this.properties.getModel()).removeElement(propertyModel);
+                    this.getModel().get().getPropertiesList().remove(propertyModel);
+
+                    if (this.properties.getModel().getSize() > 0) {
+                        this.properties.setSelectedIndex(index);
+                    }
+                }
             }
         });
 
         this.editProperty.addActionListener(e -> {
-            PropertyModel propertyModel = (PropertyModel) this.properties.getSelectedValue();
-            if (propertyModel != null) {
-                ChildScreen screen = PropertyScreenRegistry.openEditor(this, propertyModel);
-                JFrame frame = screen.initAndShow();
-                this.associatedWindows.add(frame);
+            if (this.getModel().isPresent()) {
+                PropertyModel propertyModel = (PropertyModel) this.properties.getSelectedValue();
+                if (propertyModel != null) {
+                    ChildScreen screen = PropertyScreenRegistry.openEditor(this, propertyModel);
+                    JFrame frame = screen.initAndShow();
+                    this.associatedWindows.add(frame);
+                }
             }
         });
 
@@ -370,37 +387,78 @@ public class ProjectScreen {
             int flag = i;
 
             buttons[0].addActionListener(e -> {
-                SelectAbilityScreen selectScreen = new SelectAbilityScreen(this, flag);
-                JFrame frame = selectScreen.initAndShow();
-                this.associatedWindows.add(frame);
-            });
-
-            buttons[1].addActionListener(e -> {
-                AbilityModel abilityModel = (AbilityModel) list.getSelectedValue();
-                if (abilityModel != null) {
-                    ChildScreen childScreen = AbilityScreenRegistry.openEditor(this, abilityModel);
-                    JFrame frame = childScreen.initAndShow();
+                if (this.getModel().isPresent()) {
+                    SelectAbilityScreen selectScreen = new SelectAbilityScreen(this, flag);
+                    JFrame frame = selectScreen.initAndShow();
                     this.associatedWindows.add(frame);
                 }
             });
 
+            buttons[1].addActionListener(e -> {
+                if (this.getModel().isPresent()) {
+                    AbilityModel abilityModel = (AbilityModel) list.getSelectedValue();
+                    if (abilityModel != null) {
+                        ChildScreen childScreen = AbilityScreenRegistry.openEditor(this, abilityModel);
+                        JFrame frame = childScreen.initAndShow();
+                        this.associatedWindows.add(frame);
+                    }
+                }
+            });
+
             buttons[2].addActionListener(e -> {
-                if (list.getSelectedValue() != null) {
-                    ((DefaultListModel) list.getModel()).removeElement(list.getSelectedValue());
+                if (this.getModel().isPresent()) {
+                    if (list.getSelectedValue() != null) {
+                        int index = list.getSelectedIndex();
+                        index = index == 0 ? 0 : index - 1;
+
+                        ((DefaultListModel) list.getModel()).removeElement(list.getSelectedValue());
+
+                        if (list.getModel().getSize() > 0) {
+                            list.setSelectedIndex(index);
+                        }
+                    }
                 }
             });
         }
 
         this.addCraftable.addActionListener(e -> {
-            SelectCraftableScreen selecctScreen = new SelectCraftableScreen(this);
-            JFrame frame = selecctScreen.initAndShow();
-            this.associatedWindows.add(frame);
+            if (this.getModel().isPresent()) {
+                SelectCraftableScreen selecctScreen = new SelectCraftableScreen(this);
+                JFrame frame = selecctScreen.initAndShow();
+                this.associatedWindows.add(frame);
+            }
         });
 
         this.removeCraftable.addActionListener(e -> {
-            CraftableModel model = (CraftableModel) this.craftables.getSelectedValue();
-            if (model != null) {
-                ((DefaultListModel) this.craftables.getModel()).removeElement(model);
+            if (this.getModel().isPresent()) {
+                CraftableModel model = (CraftableModel) this.craftables.getSelectedValue();
+                if (model != null) {
+                    int index = this.craftables.getSelectedIndex();
+                    index = index == 0 ? 0 : index - 1;
+
+                    ((DefaultListModel) this.craftables.getModel()).removeElement(model);
+                    this.getModel().get().getCraftables().remove(model);
+
+                    if (this.craftables.getModel().getSize() > 0) {
+                        this.craftables.setSelectedIndex(index);
+                    }
+                }
+            }
+        });
+
+        this.addAllButton.addActionListener(e -> {
+            if (this.getModel().isPresent()) {
+                List<CraftableType> toAdd = new ArrayList<>();
+                for (CraftableType type : CraftableType.values()) {
+                    if (this.getModel().get().getCraftables().stream().noneMatch(c -> c.getType() == type)) {
+                        toAdd.add(type);
+                    }
+                }
+                toAdd.forEach(t -> {
+                    CraftableModel craftableModel = new CraftableModel(t, t.getQuantity());
+                    this.getModel().get().getCraftables().add(craftableModel);
+                    ((DefaultListModel) this.craftables.getModel()).addElement(craftableModel);
+                });
             }
         });
 
@@ -461,6 +519,7 @@ public class ProjectScreen {
                             JOptionPane.showMessageDialog(null, result.buildMessage(), "Invalid Configuration", JOptionPane.ERROR_MESSAGE);
                         }
                     } catch (Throwable err) {
+                        err.printStackTrace();
                         JOptionPane.showMessageDialog(null, err.getMessage(), "Error Loading File", JOptionPane.ERROR_MESSAGE);
                     }
                 }).start();
@@ -490,6 +549,7 @@ public class ProjectScreen {
                             configuration.put("definitions", definitions);
                             configuration.save();
                         } catch (Throwable err) {
+                            err.printStackTrace();
                             JOptionPane.showMessageDialog(null, err.getMessage(), "Error Saving File", JOptionPane.ERROR_MESSAGE);
                         }
                     }).start();
@@ -641,7 +701,9 @@ public class ProjectScreen {
             @Override
             public void windowClosing(WindowEvent e) {
                 int op = JOptionPane.showConfirmDialog(null, "Are you sure you want to quit?", "Confirm Exit", JOptionPane.YES_NO_OPTION);
-                if (op == JOptionPane.OK_OPTION) {
+                if (op == JOptionPane.YES_OPTION) {
+                    associatedWindows.forEach(JFrame::dispose);
+                    associatedWindows.clear();
                     frame.dispose();
                 }
             }
@@ -934,7 +996,7 @@ public class ProjectScreen {
         label26.setText("Craftables:");
         panel10.add(label26, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel11 = new JPanel();
-        panel11.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel11.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         panel10.add(panel11, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         addCraftable = new JButton();
         addCraftable.setText("Add");
@@ -944,6 +1006,9 @@ public class ProjectScreen {
         removeCraftable.setText("Remove");
         removeCraftable.setToolTipText("Remove selected component");
         panel11.add(removeCraftable, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        addAllButton = new JButton();
+        addAllButton.setText("Add All");
+        panel11.add(addAllButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel12 = new JPanel();
         panel12.setLayout(new GridLayoutManager(4, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel7.add(panel12, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

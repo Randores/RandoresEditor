@@ -38,7 +38,7 @@ public class AbilityScreenRegistry {
     private static Map<String, RegistryItem> registry = new LinkedHashMap<>();
 
     public static void registerDefaults() {
-        register("potionEffect", (s, m) -> new PotionEffectAbilityScreen(m, s), () -> new PotionEffectModel(new PotionModel(PotionModel.KNOWN_POTIONS.get(0))));
+        register("potionEffect", (s, m) -> new PotionEffectAbilityScreen(m, s), () -> new PotionEffectModel(new PotionModel(PotionModel.KNOWN_POTIONS.get(0)), 1, 1));
     }
 
     public static <T extends AbilityModel> void register(String name,BiFunction<ProjectScreen, T, ChildScreen> editor, Supplier<T> def) {

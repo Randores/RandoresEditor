@@ -19,13 +19,10 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.randores.mod.component;
+package com.gmail.socraticphoenix.randores.component;
 
-public enum MaterialType {
-    INGOT,
-    GEM,
-    EMERALD,
-    CIRCLE_GEM,
-    SHARD,
-    DUST;
+public enum  Dimension {
+    OVERWORLD,
+    END,
+    NETHER;
 }

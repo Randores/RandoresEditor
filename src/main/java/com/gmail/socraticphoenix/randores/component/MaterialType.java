@@ -19,33 +19,13 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.randores.mod.component;
+package com.gmail.socraticphoenix.randores.component;
 
-public enum CraftableType {
-    AXE(1),
-    HOE(1),
-    PICKAXE(1),
-    SHOVEL(1),
-    HELMET(1),
-    CHESTPLATE(1),
-    LEGGINGS(1),
-    BOOTS(1),
-    SWORD(1),
-    BATTLEAXE(1),
-    SLEDGEHAMMER(1),
-    BOW(1),
-    STICK(2),
-    BRICKS(4),
-    TORCH(4);
-
-    int quantity;
-
-    CraftableType(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public int getQuantity() {
-        return this.quantity;
-    }
-
+public enum MaterialType {
+    INGOT,
+    GEM,
+    EMERALD,
+    CIRCLE_GEM,
+    SHARD,
+    DUST;
 }

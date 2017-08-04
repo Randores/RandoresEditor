@@ -33,7 +33,9 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -48,6 +50,8 @@ public class PotionEffectAbilityScreen implements ChildScreen {
     private JTextField effectActual;
     private JPanel panel1;
     private JButton doneButton;
+    private JSpinner ticks;
+    private JSpinner amplifier;
 
     private PotionEffectModel model;
 
@@ -60,6 +64,9 @@ public class PotionEffectAbilityScreen implements ChildScreen {
 
     @Override
     public JFrame initAndShow() {
+        this.amplifier.setModel(new SpinnerNumberModel(this.model.getAmplifier(), 1, null, 1));
+        this.ticks.setModel(new SpinnerNumberModel(this.model.getTicks(), 1, null, 1));
+
         PotionModel.KNOWN_POTIONS.forEach(this.mcEffects::addItem);
         this.effectActual.setText(this.model.getPotionModel().getId());
         if (PotionModel.KNOWN_POTIONS.contains(this.model.getPotionModel().getId())) {
@@ -89,6 +96,15 @@ public class PotionEffectAbilityScreen implements ChildScreen {
             }
         });
 
+        this.amplifier.addChangeListener(e -> {
+            this.model.setAmplifier((int) this.amplifier.getValue());
+            this.screen.refreshAbilities();
+        });
+        this.ticks.addChangeListener(e -> {
+            this.model.setTicks((int) this.ticks.getValue());
+            this.screen.refreshAbilities();
+        });
+
         JFrame frame = new JFrame("Potion Effect Ability Editor");
         this.doneButton.addActionListener(e -> {
             frame.dispose();
@@ -100,7 +116,7 @@ public class PotionEffectAbilityScreen implements ChildScreen {
             }
         });
         frame.add(this.panel1);
-        frame.setSize(500, 150);
+        frame.setSize(500, 200);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
 
@@ -123,7 +139,7 @@ public class PotionEffectAbilityScreen implements ChildScreen {
      */
     private void $$$setupUI$$$() {
         panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(3, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.setLayout(new GridLayoutManager(5, 2, new Insets(0, 0, 0, 0), -1, -1));
         mcEffects = new JComboBox();
         panel1.add(mcEffects, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         effectActual = new JTextField();
@@ -136,7 +152,17 @@ public class PotionEffectAbilityScreen implements ChildScreen {
         panel1.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         doneButton = new JButton();
         doneButton.setText("Done");
-        panel1.add(doneButton, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel1.add(doneButton, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label3 = new JLabel();
+        label3.setText("Ticks:");
+        panel1.add(label3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label4 = new JLabel();
+        label4.setText("Amplifier:");
+        panel1.add(label4, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        ticks = new JSpinner();
+        panel1.add(ticks, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        amplifier = new JSpinner();
+        panel1.add(amplifier, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

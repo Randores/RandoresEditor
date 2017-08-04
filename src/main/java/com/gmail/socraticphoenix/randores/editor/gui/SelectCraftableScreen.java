@@ -22,7 +22,7 @@
 package com.gmail.socraticphoenix.randores.editor.gui;
 
 import com.gmail.socraticphoenix.randores.editor.model.CraftableModel;
-import com.gmail.socraticphoenix.randores.mod.component.CraftableType;
+import com.gmail.socraticphoenix.randores.component.CraftableType;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import javax.swing.DefaultListModel;

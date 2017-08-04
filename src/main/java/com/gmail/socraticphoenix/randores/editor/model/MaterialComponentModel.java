@@ -25,7 +25,7 @@ import com.gmail.socraticphoenix.jlsc.serialization.annotation.Name;
 import com.gmail.socraticphoenix.jlsc.serialization.annotation.Serializable;
 import com.gmail.socraticphoenix.jlsc.serialization.annotation.SerializationConstructor;
 import com.gmail.socraticphoenix.jlsc.serialization.annotation.Serialize;
-import com.gmail.socraticphoenix.randores.mod.component.MaterialType;
+import com.gmail.socraticphoenix.randores.component.MaterialType;
 
 @Serializable
 public class MaterialComponentModel implements ComponentModel {

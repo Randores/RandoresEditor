@@ -30,10 +30,34 @@ import com.gmail.socraticphoenix.jlsc.value.annotation.Index;
 public class PotionEffectModel implements AbilityModel {
     @Convert(value = 0, reflect = false)
     private PotionModel potionModel;
+    @Convert(value = 1, reflect = false)
+    private int ticks;
+    @Convert(value = 2, reflect = false)
+    private int amplifier;
 
     @ConversionConstructor
-    public PotionEffectModel(@Index(0) PotionModel potionModel) {
+    public PotionEffectModel(@Index(0) PotionModel potionModel, @Index(1) int ticks, @Index(2) int amplifier) {
         this.potionModel = potionModel;
+        this.ticks = ticks;
+        this.amplifier = amplifier;
+    }
+
+    public int getTicks() {
+        return this.ticks;
+    }
+
+    public PotionEffectModel setTicks(int ticks) {
+        this.ticks = ticks;
+        return this;
+    }
+
+    public int getAmplifier() {
+        return this.amplifier;
+    }
+
+    public PotionEffectModel setAmplifier(int amplifier) {
+        this.amplifier = amplifier;
+        return this;
     }
 
     public PotionModel getPotionModel() {
@@ -47,7 +71,7 @@ public class PotionEffectModel implements AbilityModel {
 
     @Override
     public String write() {
-        return "potionEffect[id=" + this.potionModel.getId() + "]";
+        return "potionEffect[id=" + this.potionModel.getId() + ", ticks=" + this.ticks + ", amplifier=" + this.amplifier + "]";
     }
 
     public String toString() {

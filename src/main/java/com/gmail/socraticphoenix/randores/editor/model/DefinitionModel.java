@@ -27,8 +27,8 @@ import com.gmail.socraticphoenix.jlsc.serialization.annotation.SerializationCons
 import com.gmail.socraticphoenix.jlsc.serialization.annotation.Serialize;
 import com.gmail.socraticphoenix.randores.editor.model.ability.AbilitySeriesModel;
 import com.gmail.socraticphoenix.randores.editor.model.property.PropertyModel;
-import com.gmail.socraticphoenix.randores.mod.component.Dimension;
-import com.gmail.socraticphoenix.randores.mod.component.MaterialType;
+import com.gmail.socraticphoenix.randores.component.Dimension;
+import com.gmail.socraticphoenix.randores.component.MaterialType;
 
 import java.awt.Color;
 import java.util.ArrayList;

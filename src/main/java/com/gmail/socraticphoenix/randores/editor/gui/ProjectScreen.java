@@ -93,8 +93,6 @@ public class ProjectScreen {
     private JComboBox oreTypeCombo;
     private JSpinner minDrops;
     private JSpinner maxDrops;
-    private JSpinner minVein;
-    private JSpinner maxVein;
     private JSpinner minY;
     private JSpinner maxY;
     private JSpinner minOccur;
@@ -112,6 +110,7 @@ public class ProjectScreen {
     private JSpinner chestplateReduction;
     private JSpinner leggingsReduction;
     private JSpinner bootsReduction;
+    private JSpinner veinSize;
     private JTextField armorToughness;
     private JTextField efficiency;
     private JTextField damage;
@@ -204,9 +203,8 @@ public class ProjectScreen {
     public void initGui() {
         this.associatedWindows = new IdentityList<>();
 
-        this.harvestLevel.setModel(zeroMax(15));
+        this.harvestLevel.setModel(new SpinnerNumberModel(1, 1, 4, 1));
         dualLinkOneMax(this.minDrops, this.maxDrops);
-        dualLinkOneMax(this.minVein, this.maxVein);
         dualLinkZeroMax(this.minY, this.maxY);
         dualLinkZeroMax(this.minOccur, this.maxOccur);
         this.durability.setModel(oneUp());
@@ -216,15 +214,16 @@ public class ProjectScreen {
         this.chestplateReduction.setModel(zeroUp());
         this.leggingsReduction.setModel(zeroUp());
         this.bootsReduction.setModel(zeroUp());
+        this.veinSize.setModel(oneUp());
 
         this.setEditor(this.minDrops, this.maxDrops,
-                this.minVein, this.maxVein,
                 this.minY, this.maxY,
                 this.minOccur, this.maxOccur,
                 this.durability, this.enchantability,
                 this.harvestLevel, this.harvestLevelTool,
                 this.helmetReduction, this.chestplateReduction,
-                this.leggingsReduction, this.bootsReduction);
+                this.leggingsReduction, this.bootsReduction,
+                this.veinSize);
 
         this.floatListener(this.smeltingXp);
         this.floatListener(this.hardness);
@@ -272,11 +271,10 @@ public class ProjectScreen {
             }
         });
 
+        this.updateSpinner(this.veinSize, s -> (int) s.getModel().getValue(), (d, i) -> d.getOre().setVeinSize(i));
         this.updateSpinner(this.harvestLevel, s -> (int) s.getModel().getValue(), (d, i) -> d.getOre().setHarvestLevel(i));
         this.updateSpinner(this.minDrops, s -> (int) s.getModel().getValue(), (d, i) -> d.getOre().setMinDrops(i));
         this.updateSpinner(this.maxDrops, s -> (int) s.getModel().getValue(), (d, i) -> d.getOre().setMaxDrops(i));
-        this.updateSpinner(this.minVein, s -> (int) s.getModel().getValue(), (d, i) -> d.getOre().setMinVein(i));
-        this.updateSpinner(this.maxVein, s -> (int) s.getModel().getValue(), (d, i) -> d.getOre().setMaxVein(i));
         this.updateSpinner(this.minY, s -> (int) s.getModel().getValue(), (d, i) -> d.getOre().setMinY(i));
         this.updateSpinner(this.maxY, s -> (int) s.getModel().getValue(), (d, i) -> d.getOre().setMaxY(i));
         this.updateSpinner(this.minOccur, s -> (int) s.getModel().getValue(), (d, i) -> d.getOre().setMinOccurrences(i));
@@ -601,8 +599,8 @@ public class ProjectScreen {
         OreComponentModel ore = model.getOre();
         this.oreTypeCombo.setSelectedItem(ore.getOreType().getValue());
         this.oreType.setText(ore.getOreType().getValue());
+        this.veinSize.setValue(ore.getVeinSize());
         this.reset(minDrops, maxDrops, ore.getMinDrops(), ore.getMaxDrops());
-        this.reset(minVein, maxVein, ore.getMinVein(), ore.getMaxVein());
         this.reset(minY, maxY, ore.getMinY(), ore.getMaxY());
         this.reset(minOccur, maxOccur, ore.getMinOccurrences(), ore.getMaxOccurrences());
         this.harvestLevel.setValue(ore.getHarvestLevel());
@@ -819,12 +817,9 @@ public class ProjectScreen {
         final JLabel label7 = new JLabel();
         label7.setText("Vein Size:");
         panel3.add(label7, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        minVein = new JSpinner();
-        minVein.setToolTipText("Minium vein size");
-        panel3.add(minVein, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        maxVein = new JSpinner();
-        maxVein.setToolTipText("Maximum vein size");
-        panel3.add(maxVein, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        veinSize = new JSpinner();
+        veinSize.setToolTipText("Vein size");
+        panel3.add(veinSize, new GridConstraints(3, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label8 = new JLabel();
         label8.setText("Spawn Height:");
         panel3.add(label8, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));

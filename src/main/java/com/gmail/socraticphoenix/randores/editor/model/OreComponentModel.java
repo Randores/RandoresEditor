@@ -38,10 +38,8 @@ public class OreComponentModel implements ComponentModel {
     @Serialize(value = "maxDrops", reflect = false)
     private int maxDrops;
 
-    @Serialize(value = "minVein", reflect = false)
-    private int minVein;
-    @Serialize(value = "maxVein", reflect = false)
-    private int maxVein;
+    @Serialize(value = "veinSize", reflect = false)
+    private int veinSize;
 
     @Serialize(value = "minY", reflect = false)
     private int minY;
@@ -67,13 +65,12 @@ public class OreComponentModel implements ComponentModel {
     private int harvestLevel;
 
     @SerializationConstructor
-    public OreComponentModel(@Name("material") MaterialComponentModel material, @Name("oreType") OreTypeModel oreType, @Name("maxDrops") int maxDrops, @Name("minDrops") int minDrops, @Name("maxVein") int maxVein, @Name("minVein") int minVein, @Name("maxY") int maxY, @Name("minY") int minY, @Name("minOccurrences") int minOccurrences, @Name("maxOccurrences") int maxOccurrences, @Name("requiresSmelting") boolean requiresSmelting, @Name("smeltingXp") float smeltingXp, @Name("hardness") float hardness, @Name("resistance") float resistance, @Name("harvestLevel") int harvestLevel) {
+    public OreComponentModel(@Name("material") MaterialComponentModel material, @Name("oreType") OreTypeModel oreType, @Name("maxDrops") int maxDrops, @Name("minDrops") int minDrops, @Name("veinSize") int veinSize, @Name("maxY") int maxY, @Name("minY") int minY, @Name("minOccurrences") int minOccurrences, @Name("maxOccurrences") int maxOccurrences, @Name("requiresSmelting") boolean requiresSmelting, @Name("smeltingXp") float smeltingXp, @Name("hardness") float hardness, @Name("resistance") float resistance, @Name("harvestLevel") int harvestLevel) {
         this.material = material;
         this.oreType = oreType;
         this.maxDrops = maxDrops;
         this.minDrops = minDrops;
-        this.maxVein = maxVein;
-        this.minVein = minVein;
+        this.veinSize = veinSize;
         this.maxY = maxY;
         this.minY = minY;
         this.minOccurrences = minOccurrences;
@@ -121,21 +118,12 @@ public class OreComponentModel implements ComponentModel {
         return this;
     }
 
-    public int getMinVein() {
-        return this.minVein;
+    public int getVeinSize() {
+        return this.veinSize;
     }
 
-    public OreComponentModel setMinVein(int minVein) {
-        this.minVein = minVein;
-        return this;
-    }
-
-    public int getMaxVein() {
-        return this.maxVein;
-    }
-
-    public OreComponentModel setMaxVein(int maxVein) {
-        this.maxVein = maxVein;
+    public OreComponentModel setVeinSize(int veinSize) {
+        this.veinSize = veinSize;
         return this;
     }
 

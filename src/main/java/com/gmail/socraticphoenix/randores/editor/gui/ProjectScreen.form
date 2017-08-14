@@ -127,20 +127,12 @@
                           <text value="Vein Size:"/>
                         </properties>
                       </component>
-                      <component id="17364" class="javax.swing.JSpinner" binding="minVein">
+                      <component id="17364" class="javax.swing.JSpinner" binding="veinSize">
                         <constraints>
-                          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="3" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
-                          <toolTipText value="Minium vein size"/>
-                        </properties>
-                      </component>
-                      <component id="e745e" class="javax.swing.JSpinner" binding="maxVein">
-                        <constraints>
-                          <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <toolTipText value="Maximum vein size"/>
+                          <toolTipText value="Vein size"/>
                         </properties>
                       </component>
                       <component id="656b5" class="javax.swing.JLabel">

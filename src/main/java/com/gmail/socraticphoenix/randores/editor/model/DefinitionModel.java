@@ -66,7 +66,7 @@ public class DefinitionModel implements WritableModel {
         return new DefinitionModel(Color.BLACK, "",
                 new OreComponentModel(
                         new MaterialComponentModel(new MaterialTypeModel("randores.items.ingot"), new int[]{0, 0, 0, 0}, 1, 100, 1f, 1f, 0f, 0)
-                        , new OreTypeModel("overworld"), 1, 1, 1, 1, 255, 0, 1, 1, true, 0f, 3f, 3f, 1)
+                        , new OreTypeModel("overworld"), 1, 1, 2, 255, 0, 1, 1, true, 0f, 3f, 3f, 1)
                 , new ArrayList<>(), new ArrayList<>(), new AbilitySeriesModel(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>()));
     }
 
